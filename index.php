@@ -21,7 +21,7 @@
 				    ";
 		 	}
 		 	else if ($login_question_button == 'NEW USER') {
-		 		# code... validate and creating a user
+		 		# code validate and creating a user
 		 		$user_nickname = $_POST['nickname']; #CHECK FOR SQL-injections
 		 		$conn = new PDO("pgsql:host=localhost;port=4321;dbname=other", "postgres");
 		 		do
@@ -61,16 +61,37 @@
 		 	}
 		 	else if ($login_question_button == 'LOGGED') {
 		 		$user_nickname = $_POST['nickname'];
-		 		$user_code = $_POST['code'];
+		 		$user_code = $_POST['user_code'];
+		 		$just_click = $_POST['just_click'];
+		 		$conn = new PDO("pgsql:host=localhost;port=4321;dbname=other", "postgres");
+		 		# get clicks count
+				$get_clicks_cnt_query = "SELECT CLICK_COUNT FROM other.public.dim_user_account WHERE NAME='".$user_nickname."' AND CODE = '".$user_code."';";
+		 		$get_clicks_cnt_statement = $conn->prepare($get_clicks_cnt_query);
+				$get_clicks_cnt_statement->execute();
+				$clicks_cnt = $get_clicks_cnt_statement->fetchAll()[0][0];
+				$clicks_cnt = $clicks_cnt + 1;
+		 		if ($just_click == true)
+		 		{
+		 			# increase clicks count
+					$inc_clicks_cnt_query = "
+						UPDATE other.public.dim_user_account 
+						SET CLICK_COUNT=".$clicks_cnt."
+						WHERE NAME='".$user_nickname."' AND CODE = '".$user_code."';";
+					echo "AAA: ".$inc_clicks_cnt_query."<p>";
+			 		$inc_clicks_cnt_statement = $conn->prepare($inc_clicks_cnt_query);
+					$inc_clicks_cnt_statement->execute();
+		 		}
 		 		echo "<h1>Hello ".$user_nickname."</h1><p>";
 		 		echo "
 		 				<form action=\"index.php\" method=\"post\">
 		 					<input type=\"hidden\" name=\"nickname\" value=\"".$user_nickname."\"/>
-		 					<input type=\"hidden\" name=\"code\" value=\"".$user_code."\"/>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Just click...</button>
+		 					<input type=\"hidden\" name=\"user_code\" value=\"".$user_code."\"/>
+		 					<input type=\"hidden\" name=\"just_click\" value=true".$user_code."\"/>
+						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Just click...</button><p>
 						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"GAME\">Simple game</button>
 						</form>
 				    ";
+				echo "<div class=\"extra_info\">Clicks count: ".$clicks_cnt."</div>";
 			}
 		 	else if ($login_question_button == 'GAME') {
 		 		$user_nickname = $_POST['nickname'];
