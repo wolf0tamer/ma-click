@@ -63,7 +63,17 @@
 		 		$user_nickname = $_POST['nickname'];
 		 		$user_code = $_POST['user_code'];
 		 		$just_click = $_POST['just_click'];
+		 		$logged_now = $_POST['logged_now'];
 		 		$conn = new PDO("pgsql:host=localhost;port=4321;dbname=other", "postgres");
+		 		# add login time
+		 		if($logged_now == 'yes')
+		 		{
+		 			$inc_clicks_cnt_query = "
+						INSERT INTO other.public.fct_user_click_info 
+						VALUES('".$user_nickname."', '".$user_code."', CURRENT_DATE);";
+			 		$inc_clicks_cnt_statement = $conn->prepare($inc_clicks_cnt_query);
+					$inc_clicks_cnt_statement->execute();
+		 		}
 		 		# get clicks count
 				$get_clicks_cnt_query = "SELECT CLICK_COUNT FROM other.public.dim_user_account WHERE NAME='".$user_nickname."' AND CODE = '".$user_code."';";
 		 		$get_clicks_cnt_statement = $conn->prepare($get_clicks_cnt_query);
@@ -77,7 +87,6 @@
 						UPDATE other.public.dim_user_account 
 						SET CLICK_COUNT=".$clicks_cnt."
 						WHERE NAME='".$user_nickname."' AND CODE = '".$user_code."';";
-					echo "AAA: ".$inc_clicks_cnt_query."<p>";
 			 		$inc_clicks_cnt_statement = $conn->prepare($inc_clicks_cnt_query);
 					$inc_clicks_cnt_statement->execute();
 		 		}
@@ -145,7 +154,7 @@
 						    curl_setopt($curl, CURLOPT_URL, 'http://ma-click/index.php');
 						    curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
 						    curl_setopt($curl, CURLOPT_POST, true);
-						    curl_setopt($curl, CURLOPT_POSTFIELDS, "&login_question_button=LOGGED&nickname=".$user_nickname."&user_code=".$user_code);
+						    curl_setopt($curl, CURLOPT_POSTFIELDS, "&login_question_button=LOGGED&logged_now=yes&nickname=".$user_nickname."&user_code=".$user_code);
 						    $out = curl_exec($curl);
 						    echo $out;
 						    curl_close($curl);
