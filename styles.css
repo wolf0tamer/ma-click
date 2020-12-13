@@ -3,7 +3,8 @@ body{
 }
   
 button{
-  position: relative;
+  margin: 10px;
+  display: inline-block;
   background: #000;
   border: 0;
   padding: 14px 42px;
@@ -38,11 +39,44 @@ button{
   }
 
 .event_space{
+  display: inline-block;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  border: 3px double black;
+  padding: 10px;
 } 
+
+.extra_info{
+  position: absolute;
+  display: inline-block;
+  bottom: -10%;
+  right: 25%;
+}
+
+.bonus_info{
+  position: absolute;
+  display: inline-block;
+  top: -100%;
+  right: 25%;
+}  
+
+.container{
+  text-align: center;
+}
+
+.auth_question{
+  text-align: center;
+}
+
+.canvas_s{
+  position: relative;
+  left: 30%;
+  background-color: #eeeeee;
+  width: 700px;
+  height: 700px;
+}
 
 @keyframes shine{ 
   10% {

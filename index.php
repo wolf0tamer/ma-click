@@ -15,8 +15,8 @@
 				echo "
 						<form action=\"index.php\" method=\"post\">
 							<div class='auth_question'>Are you here for the first time?</div>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"first_time_button\" value=\"YES\">YES</button>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"NO\">NO</button>
+						    <div class=\"container\"><button type=\"submit\" name=\"login_question_button\" class=\"first_time_button\" value=\"YES\">YES</button>
+						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"NO\">NO</button></div>
 					    </form>
 				    ";
 		 	}
@@ -50,12 +50,12 @@
 		 	else if ($login_question_button == 'READY') {
 		 		$user_nickname = $_POST['nickname'];
 		 		$user_code = $_POST['code'];
-		 		echo "<h1>Your account actually created.<p>Nickname: ".$user_nickname."<p>Code: ".$user_code."</h1><p>Save this code for next authentication.<br>";
+		 		echo "<h1>Your account actually created.<p>Nickname: ".$user_nickname."<p>Code: <p>".$user_code."</h1><p>Save this code for next authentication.<br>";
 		 		echo "
 		 				<form action=\"index.php\" method=\"post\">
 		 					<input type=\"hidden\" name=\"nickname\" value=\"".$user_nickname."\"/>
 		 					<input type=\"hidden\" name=\"code\" value=\"".$user_code."\"/>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Enjoy</button>
+						    <div class=\"container\"><button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Enjoy</button></div>
 						</form>
 				    ";
 		 	}
@@ -80,6 +80,22 @@
 				$get_clicks_cnt_statement->execute();
 				$clicks_cnt = $get_clicks_cnt_statement->fetchAll()[0][0];
 				$clicks_cnt = $clicks_cnt + 1;
+				if ($clicks_cnt == 3)
+				{
+					echo "<div class=\"bonus_info\"><h2>You are beginer of clicking!</h2></div>";
+				}
+				elseif ($clicks_cnt == 9)
+				{
+					echo "<div class=\"bonus_info\"><h2>You now how to click!</h2></div>";
+				}
+				elseif ($clicks_cnt > 20 and  $clicks_cnt < 30)
+				{
+					echo "<div class=\"bonus_info\"><style>.bonus_info{right: 300%;}  </style><h2>Award for you!</h2><p><img src=\"/extra/fuj.gif\"></div>";
+				}
+				elseif ($clicks_cnt > 30)
+				{
+					echo "<div class=\"bonus_info\"><h2>Award for you!</h2><p><style>body{background-image: url(/extra/fuj.gif)}</style><img src=\"/extra/fuj.gif\"></div>";
+				}
 		 		if ($just_click == true)
 		 		{
 		 			# increase clicks count
@@ -90,24 +106,28 @@
 			 		$inc_clicks_cnt_statement = $conn->prepare($inc_clicks_cnt_query);
 					$inc_clicks_cnt_statement->execute();
 		 		}
-		 		echo "<h1>Hello ".$user_nickname."</h1><p>";
+		 		echo "<h1>Hello, ".$user_nickname."</h1><p>";
 		 		echo "
-		 				<form action=\"index.php\" method=\"post\">
-		 					<input type=\"hidden\" name=\"nickname\" value=\"".$user_nickname."\"/>
-		 					<input type=\"hidden\" name=\"user_code\" value=\"".$user_code."\"/>
-		 					<input type=\"hidden\" name=\"just_click\" value=true".$user_code."\"/>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Just click...</button><p>
-						    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"GAME\">Simple game</button>
-						</form>
+		 				<div class=\"container\">
+			 				<form action=\"index.php\" method=\"post\">
+			 					<input type=\"hidden\" name=\"nickname\" value=\"".$user_nickname."\"/>
+			 					<input type=\"hidden\" name=\"user_code\" value=\"".$user_code."\"/>
+			 					<input type=\"hidden\" name=\"just_click\" value=true".$user_code."\"/>
+							    <button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"LOGGED\">Just click...</button><p>
+							</form>
+							<form action=\"/main/game-page.html\" method=\"post\">
+								<button type=\"submit\" name=\"login_question_button\" class=\"go_to_login_button\" value=\"GAME\">Simple game</button>
+							</form>
+						</div>
 				    ";
 				echo "<div class=\"extra_info\">Clicks count: ".$clicks_cnt."</div>";
 			}
 		 	else if ($login_question_button == 'GAME') {
 		 		$user_nickname = $_POST['nickname'];
 		 		$user_code = $_POST['code'];
-		 		echo "<h1>Hello ".$user_nickname."</h1><p>";
+		 		echo "<h1>Hello, ".$user_nickname."</h1><p>";
 		 		if( $curl = curl_init() ) {
-				    curl_setopt($curl, CURLOPT_URL, 'http://ma-click/main/simple-game.js');
+				    curl_setopt($curl, CURLOPT_URL, 'http://ma-click/main/game-page.html');
 				    curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
 				    curl_setopt($curl, CURLOPT_POST, true);
 				    curl_setopt($curl, CURLOPT_POSTFIELDS, "&nickname=".$user_nickname."&code=".$code);
@@ -120,8 +140,9 @@
 		 	{
 		 		echo "<h1>Then come up with a Nickname</h1>
 		 				<form action=\"index.php\" method=\"post\">
-							<p>Nickname: <input type=\"text\" name=\"nickname\" /></p>
-							<p><button type=\"submit\" name=\"login_question_button\" value=\"NEW USER\"/>I want to be called...</button></p>
+		 				<div class=\"container\">
+							<p>I want to be called... <input type=\"text\" name=\"nickname\" />
+							<p><button type=\"submit\" name=\"login_question_button\" value=\"NEW USER\"/>OK</button></div></p>
 						</form>";
 		 	}
 		 	else if ($login_question_button == 'NO')
@@ -135,9 +156,9 @@
 				{
 				    echo "
 					    <form action=\"index.php\" method=\"post\">
-							<p>Nickname: <input type=\"text\" name=\"nickname\" /></p>
-							<p>Code: <input type=\"text\" name=\"code\" /></p>
-							<p><button type=\"submit\" name=\"login_question_button\" value=\"NO\"/>Approve</button></p>
+							<p>Nickname: <p><input type=\"text\" name=\"nickname\" /></p>
+							<p>Code: <p><input type=\"text\" name=\"code\" /></p>
+							<p><div class=\"container\"><button type=\"submit\" name=\"login_question_button\" value=\"NO\"/>Approve</button></div></p>
 						</form>
 				    ";
 				} 
